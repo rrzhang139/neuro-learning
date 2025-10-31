@@ -55,6 +55,8 @@ if __name__ == '__main__':
     bin_size = 0.2
     max_time = 8
     all_trials_spike_counts = []
+    all_trials_isi_means = []
+    all_trials_isi_stds = []
     for trial_idx, trial in enumerate(neuron_spikes):
         spikes = len(trial)
         if spikes == 0:
@@ -75,14 +77,20 @@ if __name__ == '__main__':
         all_trials_spike_counts.append(spikes_per_bin)
 
         # Calculate ISI (inter-spike intervals)
+        inter_spike_intervals = np.diff(trial)
+        isi_mean = np.mean(inter_spike_intervals)
+        isi_std = np.std(inter_spike_intervals)
+        all_trials_isi_means.append(isi_mean)
+        all_trials_isi_stds.append(isi_std)
+        # print(f"inter_spike_intervals: {inter_spike_intervals[:3]}")
 
+    # PROBLEM 1: Average Firing rate overall
     avg_fr = np.mean(trial_fr)
     std_fr = np.std(trial_fr)
     print(f"average firing rate: {avg_fr}")
     print(f"std firing rate: {std_fr}")
 
-    print(np.stack(all_trials_spike_counts, axis=0).shape)
-
+    # PROBLEM 2: Time-dependent firing rate
     all_trials_spike_counts = np.array(
         all_trials_spike_counts)  # (N_trials x N_bins)
     mean_spike_counts_per_bin = np.mean(all_trials_spike_counts, axis=0)
@@ -92,3 +100,14 @@ if __name__ == '__main__':
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
     plt.plot(bin_centers, time_dependent_firing_rate)
     plt.show()
+
+    # PROBLEM 3: Inter-spike Intervals
+    # One property of ISIs are regularity of spikes. We can measure this through Coefficient of Variation
+    # how much intervals vary relative to the mean
+    all_trials_isi_means = np.array(
+        all_trials_isi_means)
+    all_trials_isi_stds = np.array(
+        all_trials_isi_stds)
+    cv_per_trial = all_trials_isi_stds / all_trials_isi_means
+    print(f"cv_per_trial: {cv_per_trial}")
+    # Analysis: CVs are ~1, so firing patterns are random, not bursty.
