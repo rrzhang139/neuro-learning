@@ -1,0 +1,15 @@
+# Large data and experimental artifacts
+pfc-3/
+
+# Python cache and virtual env
+__pycache__/
+*.pyc
+.Python
+.venv/
+venv/
+.env
+
+# macOS
+.DS_Store
+
+
