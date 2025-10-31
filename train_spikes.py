@@ -107,6 +107,23 @@ def calculate_statistics(neuron_spikes: list, bin_size: float, max_time: float =
     return stats
 
 
+def compute_cross_correlation(neuron1_trials: list, neuron2_trials: list, max_lag: float = 5.0, bin_size: float = 0.05):
+    bins = np.arange(-max_lag, max_lag + bin_size, bin_size)
+    total_corr = np.zeros(len(bins) - 1)
+
+    for spikes1, spikes2 in zip(neuron1_trials, neuron2_trials):
+        if len(spikes1) == 0 or len(spikes2) == 0:
+            continue
+        diffs = spikes1[:, None] - spikes2[None, :]
+        diffs = diffs.flatten()
+        diffs = diffs[np.abs(diffs) <= max_lag]
+        corr, _ = np.histogram(diffs, bins=bins)
+        total_corr += corr
+
+    lags = (bins[:-1] + bins[1:]) / 2
+    return lags, total_corr
+
+
 if __name__ == '__main__':
 
     neuron_spikes = load_spike_trains("pfc-3/ELV133_3_2271.mat")
@@ -163,4 +180,14 @@ if __name__ == '__main__':
     plt.xlabel("Time (s)")
     plt.ylabel("Firing Rate (Hz)")
     plt.title("Sliding Window Firing Rate for Neuron ELV133_3_2271")
+    plt.show()
+
+    # PROBLEM 5: Cross-correlation function
+    lags, total_corr = compute_cross_correlation(neuron_spikes, neuron_spikes2)
+    print(f"Cross-correlation: {total_corr}")
+    plt.figure()
+    plt.plot(lags, total_corr)
+    plt.xlabel("Time lag between spikes (s)")
+    plt.ylabel("Correlation per time bin (Hz)")
+    plt.title("Cross/Auto-correlation with lag between neuron1 and neuron2")
     plt.show()
