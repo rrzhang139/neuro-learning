@@ -43,4 +43,6 @@ The project:
 - Python 3.x with `numpy`, `scipy`, and `matplotlib` installed.
 - Large data files (e.g., `.mat`) should live outside version control. This repo ignores `pfc-3/`.
 
-
+### Dataset
+- Here is the [dataset](https://crcns.org/data-sets/pfc/pfc-3/about-pfc-2) for `train_spikes.py`, where we use spike data to calculate all sorts of statistics.
+- Here is the [dataset](https://doi.gin.g-node.org/10.12751/g-node.zpj6rc/) for `train_spikes_stimulus.py`, where we use white noise stimuli to calculate the spike-triggered average (STA)
