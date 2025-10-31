@@ -8,8 +8,8 @@ This repository documents my journey learning computational neuroscience using G
 - **Narrative + code**: code evolves from minimal seeds to complete implementations, guided by short, focused inline TODOs.
 
 ### Current concept map
-- `spikes.py`: Spike trains, per-trial firing rates, and time-dependent firing statistics (PSTH-style binning) using `.mat` data.
-- `fire.py`: Leaky integrate-and-fire neuron simulation with Poisson excitatory input; basic threshold/reset dynamics and visualization.
+- `train_spikes.py`: Spike trains, per-trial firing rates, and time-dependent firing statistics (PSTH-style binning) using `.mat` data.
+- `single_neuron_simulation.py`: Leaky integrate-and-fire neuron simulation with Poisson excitatory input; basic threshold/reset dynamics and visualization.
 - `pfc-3/`: Raw `.mat` data files used for spike analyses (large; excluded from version control).
 
 ### Prompt to begin learning

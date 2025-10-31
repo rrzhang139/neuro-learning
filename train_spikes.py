@@ -54,9 +54,12 @@ if __name__ == '__main__':
     trial_fr = []
     bin_size = 0.2
     max_time = 8
+    window_size = 0.5
+    dt = 0.01
     all_trials_spike_counts = []
     all_trials_isi_means = []
     all_trials_isi_stds = []
+    all_trials_sliding_rates = []  # To store sliding window rates for each trial
     for trial_idx, trial in enumerate(neuron_spikes):
         spikes = len(trial)
         if spikes == 0:
@@ -75,6 +78,25 @@ if __name__ == '__main__':
         bin_edges = np.arange(0, max_time, bin_size)
         spikes_per_bin, _ = np.histogram(trial, bins=bin_edges)
         all_trials_spike_counts.append(spikes_per_bin)
+        # Calculate sliding window firing rate for the current trial
+        t_points = np.arange(0, max_time, dt)
+        trial_sliding_rates = []
+        half_window = window_size / 2
+        for t in t_points:
+            window_start = t - half_window
+            window_end = t + half_window
+
+            # Efficiently count spikes within the window using searchsorted
+            # Assumes 'trial' (spike times) is sorted
+            start_idx = np.searchsorted(trial, window_start, side='left')
+            end_idx = np.searchsorted(trial, window_end, side='left')
+
+            spikes_in_window = end_idx - start_idx
+
+            # Firing rate for this window
+            rate = spikes_in_window / window_size
+            trial_sliding_rates.append(rate)
+        all_trials_sliding_rates.append(trial_sliding_rates)
 
         # Calculate ISI (inter-spike intervals)
         inter_spike_intervals = np.diff(trial)
@@ -99,6 +121,9 @@ if __name__ == '__main__':
 
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
     plt.plot(bin_centers, time_dependent_firing_rate)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Firing Rate (Hz)")
+    plt.title("Peri-Stimulus Time Histogram (PSTH) for Neuron ELV133_3_2271")
     plt.show()
 
     # PROBLEM 3: Inter-spike Intervals
@@ -111,3 +136,14 @@ if __name__ == '__main__':
     cv_per_trial = all_trials_isi_stds / all_trials_isi_means
     print(f"cv_per_trial: {cv_per_trial}")
     # Analysis: CVs are ~1, so firing patterns are random, not bursty.
+
+    # PROBLEM 4: Time-dependent firing rate using sliding window
+    all_trials_sliding_rates = np.array(all_trials_sliding_rates)
+    mean_sliding_rate = np.mean(all_trials_sliding_rates, axis=0)
+
+    plt.figure()
+    plt.plot(t_points, mean_sliding_rate)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Firing Rate (Hz)")
+    plt.title("Sliding Window Firing Rate for Neuron ELV133_3_2271")
+    plt.show()
