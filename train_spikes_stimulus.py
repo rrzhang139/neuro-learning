@@ -41,4 +41,15 @@ for t in range(n_time_bins):
         if t >= k:
             estimated_firing_rates[t] += sta[k] * stimulus[t - k]
 
+r0 = 0
+estimated_firing_rates = r0 + np.log1p(np.exp(estimated_firing_rates))
 print(f"estimated firing rates: {estimated_firing_rates}")
+# [ 0.45354794 -0.5828252   0.47753649 ...  6.04938982  3.06914371 -2.20669993]
+# Ex: 6.04 indicates the 3rd to last time index has a very favorable match to the stimulus we exposed it to.
+plt.plot(time, estimated_firing_rates)
+plt.show()
+
+# Generating actual spikes (before was instantaneous estimated firing rates)
+spikes_estimated = np.random.rand(n_time_bins) < (estimated_firing_rates * dt)
+plt.plot(time, spikes_estimated)
+plt.show()
